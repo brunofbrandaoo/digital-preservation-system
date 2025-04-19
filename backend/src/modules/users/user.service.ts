@@ -1,20 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import type { PrismaService } from '../../database/prisma.service';
-import type { Prisma, Users } from '@prisma/client';
+import type { Users } from '@prisma/client';
+import type { CreateUserDto } from './dto/create-user-body';
+import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private usersRepository: UsersRepository) {}
 
-  async createUser(data: Prisma.UsersCreateInput): Promise<Users> {
-    return this.prisma.users.create({
-      data,
-    });
+  async createUser(data: CreateUserDto): Promise<Users> {
+    return this.usersRepository.create(data);
   }
 
-  async deleteUser(where: Prisma.UsersWhereUniqueInput): Promise<Users> {
-    return this.prisma.users.delete({
-      where,
-    });
+  async deleteUser(where: { id: string }): Promise<Users> {
+    return this.usersRepository.delete(where.id);
+  }
+
+  async findByEmail(email: string): Promise<Users | null> {
+    return this.usersRepository.findByEmail(email);
   }
 }
